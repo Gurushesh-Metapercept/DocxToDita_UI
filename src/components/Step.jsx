@@ -16,7 +16,7 @@ const Step = ({ stepValue }) => {
         items={[
           {
             title: "Step 1",
-            description: "Upload a Docx file.",
+            description: "Upload a zip file.",
           },
           {
             title: "Step 2",

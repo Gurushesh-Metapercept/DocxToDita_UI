@@ -17,14 +17,15 @@ code {
   
 }
 
-.main-content {
-
+.main-content, 
+.loginPage {
   min-height: calc(100vh - 154.8px);
+  
 }
 
 @media screen and (min-width: 768px) {
-  .main-content {
+  .main-content, 
+  .loginPage {
     min-height: calc(100vh - 131.8px);
   }
-  
 }
