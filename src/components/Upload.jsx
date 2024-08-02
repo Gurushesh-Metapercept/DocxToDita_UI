@@ -257,7 +257,7 @@ const Upload = () => {
                 <button
                   className="text-decoration-none btn mt-4 text-white"
                   style={{
-                    background: "#71A5CB",
+                    background: "#F76935",
                   }}
                   onClick={() => downloadButtonHandler(downloadLink)}
                 >
