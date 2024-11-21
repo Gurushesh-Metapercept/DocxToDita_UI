@@ -44,9 +44,11 @@ const Upload = () => {
           `${apiUrl}/api/upload`,
           formData,
           {
+
             headers: {
               "Content-Type": "multipart/form-data",
             },
+            
           }
         );
 
@@ -100,11 +102,13 @@ const Upload = () => {
 
     try {
       const preRes = await axios.post(`${apiUrl}/api/checkPreflight`);
+
       if (preRes.status === 200) {
         try {
-          const response = await defaultAxios.get(
+          const response = await axios.get(
             `${apiUrl}/api/convertDocxToDita`
           );
+          console.log({response})
           const responseData = response.data;
           if (response.status === 200) {
             setLoading(false);
