@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 import defaultAxios from "./axiosInstance";
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -47,15 +47,15 @@ const Login = () => {
     const url = `${apiUrl}/api/login`;
 
     try {
-
       const response = await defaultAxios.post(url, cred, {
         headers: {
           "Content-Type": "application/json",
         },
       });
       const data = response?.data;
-   
+
       localStorage.setItem("token", data?.token);
+      localStorage.setItem("userId", data.userId);
       return response;
     } catch (error) {
       throw new Error(error.response?.data?.message || error.message);
@@ -128,4 +128,3 @@ const Login = () => {
 };
 
 export default Login;
-

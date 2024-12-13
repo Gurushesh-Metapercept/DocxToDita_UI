@@ -5,7 +5,6 @@ const defaultAxios = axios.create();
 defaultAxios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    console.log(token)
     if (token) {
       config.headers.token = token;
     }
@@ -36,4 +35,3 @@ defaultAxios.interceptors.response.use(
 );
 
 export default defaultAxios;
-

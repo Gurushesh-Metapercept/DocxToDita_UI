@@ -39,33 +39,39 @@ const Upload = () => {
     try {
       if (file) {
         const formData = new FormData();
+        const userId = localStorage.getItem("userId"); // Retrieve userId from localStorage
+
+        if (!userId) {
+          throw new Error("User ID is missing. Please log in again.");
+        }
+
         formData.append("file", file);
+        formData.append("userId", userId);
+
         const response = await defaultAxios.post(
-          `${apiUrl}/api/upload`,
+          `${apiUrl}/api/pre-flight-check`,
           formData,
           {
-
             headers: {
               "Content-Type": "multipart/form-data",
             },
-            
           }
         );
 
         const responseData = response.data;
 
-        if (response.status === 200) {
+        if (response.status === 201) {
+          console.log("👉 [Upload.jsx:64]: response: ", responseData.message);
           setError("");
-          setMessage(responseData.message);
+          setMessage(
+            responseData.message === "ok"
+              ? "Docx file uploaded successfully."
+              : "Success"
+          );
           setParseButton(true);
           setDownloadLink(responseData.downloadLink);
           setStepValue(1);
         } else if (response.status === 401) {
-          setLoading(false);
-          toast.error(responseData.message, {
-            position: "top-right",
-            autoClose: 2000,
-          });
         } else {
           setError(responseData.message);
         }
@@ -77,8 +83,11 @@ const Upload = () => {
         setError("Please select a file to upload.");
       }
     } catch (error) {
-      console.error("Error occurred:", error);
       setLoading(false);
+      toast.error(error.message || "An error occurred during the upload.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
 
       if (error.response.status === 401 || error.response.status === 500) {
         toast.error(
@@ -101,48 +110,51 @@ const Upload = () => {
     setMessage("");
 
     try {
-      const preRes = await axios.post(`${apiUrl}/api/checkPreflight`);
+      const userId = localStorage.getItem("userId");
+      const formData = new FormData();
+      if (userId) {
+        formData.append("userId", userId);
+      }
 
-      if (preRes.status === 200) {
-        try {
-          const response = await axios.get(
-            `${apiUrl}/api/convertDocxToDita`
-          );
-          console.log({response})
-          const responseData = response.data;
-          if (response.status === 200) {
-            setLoading(false);
-            setError("");
-            setParseButton(false);
-            setMessage(responseData.message);
-            setDownloadLink(responseData.downloadLink);
-            setStepValue(2);
-          } else if (response.status === 401) {
-            setLoading(false);
-            toast.error(responseData.message, {
+      try {
+        const response = await axios.post(
+          `${apiUrl}/api/convertDocxToDita`,
+          formData
+        );
+
+        const responseData = response.data;
+        if (response.status === 200) {
+          setLoading(false);
+          setError("");
+          setParseButton(false);
+          setMessage(responseData.message);
+          setDownloadLink(responseData.downloadLink);
+          setStepValue(2);
+        } else if (response.status === 401) {
+          setLoading(false);
+          toast.error(responseData.message, {
+            position: "top-right",
+            autoClose: 2000,
+          });
+        } else {
+          setLoading(false);
+          setError(responseData.message);
+        }
+      } catch (error) {
+        setLoading(false);
+        console.log("catch error", error);
+        if (error.response.status === 401 || error.response.status === 500) {
+          toast.error(
+            error.response?.data?.message ||
+              error.message ||
+              "Something went wrong. Please try again.",
+            {
               position: "top-right",
               autoClose: 2000,
-            });
-          } else {
-            setLoading(false);
-            setError(responseData.message);
-          }
-        } catch (error) {
-          setLoading(false);
-          console.log("catch error", error);
-          if (error.response.status === 401 || error.response.status === 500) {
-            toast.error(
-              error.response?.data?.message ||
-                error.message ||
-                "Something went wrong. Please try again.",
-              {
-                position: "top-right",
-                autoClose: 2000,
-              }
-            );
-          } else {
-            setError(error.response?.data?.message);
-          }
+            }
+          );
+        } else {
+          setError(error.response?.data?.message);
         }
       }
     } catch (error) {
